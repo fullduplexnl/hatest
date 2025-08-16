@@ -1,0 +1,3 @@
+#!/usr/bin/execlineb -S0
+# Niks nodig; placeholder voor nette shutdown
+exit 0

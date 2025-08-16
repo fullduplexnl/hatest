@@ -1,0 +1,21 @@
+name: "HA Test (Apache CGI)"
+version: "0.0.1"
+slug: "hatest"
+description: "Eenvoudige Apache httpd + CGI test add-on"
+url: "https://github.com/fullduplexnl/hatest/tree/main/hatest"
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: application
+
+# Laat de gebruiker een hostpoort kiezen voor Apache.
+# Intern luisteren we op 8080; extern is configureerbaar in de UI.
+ports:
+  "8080/tcp": null
+
+# Handige link in de UI
+webui: "http://[HOST]:[PORT:8080]/"
+
+# Geen prebuilt image: Supervisor bouwt op de Pi.
+image: null
