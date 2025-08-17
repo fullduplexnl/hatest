@@ -32,13 +32,14 @@ RUN chmod +x /usr/lib/cgi-bin/* || true
 COPY rootfs/ /
 
 # Oude/overlappende CGI-configs uitschakelen en ScriptAlias uit httpd.conf verwijderen
-RUN a2disconf serve-cgi-bin || true \
+# Modules & confs netjes zetten
+RUN a2dismod mpm_event || true \
+ && a2enmod mpm_prefork perl alias cgi \
+ && a2disconf serve-cgi-bin || true \
  && rm -f /etc/apache2/conf-enabled/serve-cgi-bin.conf || true \
  && rm -f /etc/apache2/conf.d/50-cgi.conf || true \
- && sed -i '/^[[:space:]]*ScriptAlias[[:space:]]\+\/cgi-bin\//d' /etc/apache2/httpd.conf \
  && a2enconf hatest-perl \
  && apachectl -t
-
 
 # Klaar: Supervisor start via /etc/services.d/...
 
