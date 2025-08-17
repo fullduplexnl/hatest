@@ -30,7 +30,15 @@ RUN chmod +x /usr/lib/cgi-bin/* || true
 
 # Belangrijk: eerst rootfs kopiëren (conf-available/hatest-perl.conf komt hiermee mee)
 COPY rootfs/ /
-RUN a2disconf serve-cgi-bin || true && a2enconf hatest-perl
+
+# Oude/overlappende CGI-configs uitschakelen en ScriptAlias uit httpd.conf verwijderen
+RUN a2disconf serve-cgi-bin || true \
+ && rm -f /etc/apache2/conf-enabled/serve-cgi-bin.conf || true \
+ && rm -f /etc/apache2/conf.d/50-cgi.conf || true \
+ && sed -i '/^[[:space:]]*ScriptAlias[[:space:]]\+\/cgi-bin\//d' /etc/apache2/httpd.conf \
+ && a2enconf hatest-perl \
+ && apachectl -t
+
 
 # Klaar: Supervisor start via /etc/services.d/...
 
