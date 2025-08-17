@@ -24,5 +24,8 @@ COPY cgi-bin/ /var/www/cgi-bin/
 # Zorg dat CGI uitvoerbaar is
 RUN chmod +x /var/www/cgi-bin/*.cgi || true
 
+# s6-services van de add-on (run-script) in het image plaatsen
+COPY rootfs/ /
+
 # Supervisor start automatisch via /etc/services.d/ (staat in jouw rootfs)
 
