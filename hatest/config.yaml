@@ -1,5 +1,5 @@
 name: HA Test (Apache CGI)
-version: "1.2.3"
+version: "1.2.4"
 slug: hatest
 description: Simple Apache + CGI test add-on
 url: "https://github.com/fullduplexnl/hatest/tree/main/hatest"
