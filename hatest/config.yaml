@@ -1,18 +1,19 @@
-name: "HA Test (Apache CGI)"
-version: "1.2.2"
-slug: "hatest"
-description: "Eenvoudige Apache httpd + CGI test add-on"
+name: HA Test (Apache CGI)
+version: "1.2.3"
+slug: hatest
+description: Simple Apache + CGI test add-on
 url: "https://github.com/fullduplexnl/hatest/tree/main/hatest"
 arch:
   - aarch64
   - amd64
-init: false
-startup: application
-
-# Laat de gebruiker een hostpoort kiezen voor Apache.
-# Intern luisteren we op 8080; extern is configureerbaar in de UI.
+startup: services
+boot: auto
+map:
+  - config:ro
 ports:
-  "8080/tcp": null
+  "8080/tcp": 8080
+ingress: false
+panel_icon: mdi:web
 
 # Handige link in de UI
 webui: "http://[HOST]:[PORT:8080]/"
