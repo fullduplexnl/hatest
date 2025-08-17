@@ -9,8 +9,7 @@ RUN apk add --no-cache \
       apache2 \
       apache2-utils \
       apache2-proxy \
-      apache2-ssl \
-      apache2-cgi
+      apache2-ssl
 
 # Zet CGI aan in de config en stel poort en ServerName in
 RUN sed -ri 's|#(LoadModule cgid_module modules/mod_cgid.so)|\1|' /etc/apache2/httpd.conf \
