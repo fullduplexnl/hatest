@@ -1,3 +1,9 @@
 #!/usr/bin/with-contenv bash
 set -euo pipefail
-exec /usr/local/bin/httpd-foreground
+
+# Vereiste runtime-dirs voor Alpine's apache2
+mkdir -p /run/apache2 /var/log/apache2 /var/www/localhost/htdocs /var/www/cgi-bin
+
+# Start Apache in foreground (zodat s6 hem kan beheren)
+exec /usr/sbin/httpd -D FOREGROUND
+
