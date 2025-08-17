@@ -11,13 +11,19 @@ RUN apk add --no-cache \
       apache2-proxy \
       apache2-ssl
 
-# Apache config tweaken (CGI aan + poort 8080 + permissies voor default cgi-dir)
-RUN sed -ri 's|#(LoadModule cgid_module modules/mod_cgid.so)|\1|' /etc/apache2/httpd.conf \
- && printf '\n<Directory "/var/www/localhost/cgi-bin">\n  AllowOverride None\n  Options +ExecCGI\n  Require all granted\n</Directory>\n' >> /etc/apache2/httpd.conf \
- && echo 'AddHandler cgi-script .cgi .pl' >> /etc/apache2/httpd.conf \
- && echo 'ServerName localhost' >> /etc/apache2/httpd.conf \
- && sed -ri 's|^Listen 80$|Listen 8080|' /etc/apache2/httpd.conf
-#  ^^^ LET OP: géén extra ScriptAlias toevoegen; de default bestaat al
+# CGI aan + poort 8080 + eigen conf.d bestand (zonder ScriptAlias)
+RUN sed -ri 's|^Listen 80$|Listen 8080|' /etc/apache2/httpd.conf \
+ && sed -ri 's|^#LoadModule cgid_module modules/mod_cgid.so$|LoadModule cgid_module modules/mod_cgid.so|' /etc/apache2/httpd.conf \
+ && { \
+      echo 'AddHandler cgi-script .cgi .pl'; \
+      echo '<Directory "/var/www/localhost/cgi-bin">'; \
+      echo '  Options +ExecCGI'; \
+      echo '  AllowOverride None'; \
+      echo '  Require all granted'; \
+      echo '</Directory>'; \
+      echo 'ServerName localhost'; \
+    } > /etc/apache2/conf.d/50-hatest.conf
+
 
 # Statische site en CGI-scripts op de Alpine standaardpaden
 COPY www/ /var/www/localhost/htdocs/
