@@ -30,9 +30,7 @@ RUN chmod +x /usr/lib/cgi-bin/* || true
 
 # Belangrijk: eerst rootfs kopiëren (conf-available/hatest-perl.conf komt hiermee mee)
 COPY rootfs/ /
-
-# Daarna de conf activeren
-RUN a2enconf hatest-perl
+RUN a2disconf serve-cgi-bin || true && a2enconf hatest-perl
 
 # Klaar: Supervisor start via /etc/services.d/...
 
