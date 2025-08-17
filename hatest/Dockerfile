@@ -28,27 +28,11 @@ COPY www/ /var/www/html/
 COPY cgi-bin/ /usr/lib/cgi-bin/
 RUN chmod +x /usr/lib/cgi-bin/* || true
 
-# Zet simpele CGI/Perl handlers aan (permissies op default paden)
-RUN bash -lc 'cat >/etc/apache2/conf-available/hatest-perl.conf << "EOF"\n\
-AddHandler cgi-script .cgi .pl\n\
-ScriptAlias /cgi-bin/ \"/usr/lib/cgi-bin/\"\n\
-<Directory \"/usr/lib/cgi-bin\">\n\
-  Options +ExecCGI\n\
-  Require all granted\n\
-</Directory>\n\
-# Voor mod_perl Registry (optioneel voor .pl in cgi-bin)\n\
-PerlModule ModPerl::Registry\n\
-<FilesMatch \"\\.pl$\">\n\
-  SetHandler perl-script\n\
-  PerlResponseHandler ModPerl::Registry\n\
-  PerlOptions +ParseHeaders\n\
-  Options +ExecCGI\n\
-</FilesMatch>\n\
-EOF' \
- && a2enconf hatest-perl
-
-# s6 service scripts uit je add-on
+# Belangrijk: eerst rootfs kopiëren (conf-available/hatest-perl.conf komt hiermee mee)
 COPY rootfs/ /
+
+# Daarna de conf activeren
+RUN a2enconf hatest-perl
 
 # Klaar: Supervisor start via /etc/services.d/...
 
