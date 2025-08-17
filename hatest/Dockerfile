@@ -35,7 +35,7 @@ COPY rootfs/ /
 # Modules & confs netjes zetten
 RUN a2dismod mpm_event || true \
  && a2enmod mpm_prefork perl alias cgi \
- && a2disconf serve-cgi-bin || true \
+ && a2enconf serve-cgi-bin \
  && rm -f /etc/apache2/conf-enabled/serve-cgi-bin.conf || true \
  && rm -f /etc/apache2/conf.d/50-cgi.conf || true \
  && a2enconf hatest-perl \
