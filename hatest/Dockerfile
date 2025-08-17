@@ -1,19 +1,29 @@
+# Home Assistant add-on Dockerfile
+# We bouwen altijd vanaf het HA base image dat de Supervisor meegeeft
 ARG BUILD_FROM
 FROM $BUILD_FROM
 
-# 1) cgid-module aan (CGI), 2) CGI toestaan op bestaande cgi-bin dir,
-# 3) ServerName, 4) luisterpoort 8080 i.p.v. 80
-RUN sed -ri 's|#(LoadModule cgid_module modules/mod_cgid.so)|\1|' /usr/local/apache2/conf/httpd.conf \
- && printf '\n<Directory "/usr/local/apache2/cgi-bin">\n  Options +ExecCGI\n  Require all granted\n</Directory>\n' >> /usr/local/apache2/conf/httpd.conf \
- && echo 'ServerName localhost' >> /usr/local/apache2/conf/httpd.conf \
- && sed -ri 's|^Listen 80$|Listen 8080|' /usr/local/apache2/conf/httpd.conf
+# Zorg dat we bash, apache2 en CGI hebben
+RUN apk add --no-cache \
+      bash \
+      apache2 \
+      apache2-utils \
+      apache2-proxy \
+      apache2-ssl \
+      apache2-cgi
 
-# Statische site & CGI
-COPY ./www/ /usr/local/apache2/htdocs/
-COPY ./cgi-bin/ /usr/local/apache2/cgi-bin/
+# Zet CGI aan in de config en stel poort en ServerName in
+RUN sed -ri 's|#(LoadModule cgid_module modules/mod_cgid.so)|\1|' /etc/apache2/httpd.conf \
+ && printf '\n<Directory "/var/www/cgi-bin">\n  Options +ExecCGI\n  Require all granted\n</Directory>\n' >> /etc/apache2/httpd.conf \
+ && echo 'ServerName localhost' >> /etc/apache2/httpd.conf \
+ && sed -ri 's|^Listen 80$|Listen 8080|' /etc/apache2/httpd.conf
 
-# Zorg dat CGI’s uitvoerbaar zijn
-RUN chmod +x /usr/local/apache2/cgi-bin/*.cgi || true
+# Kopieer jouw statische site en CGI-scripts
+COPY www/ /var/www/localhost/htdocs/
+COPY cgi-bin/ /var/www/cgi-bin/
 
-# s6-services (HA add-on) starten Apache in foreground
-COPY rootfs/ /
+# Zorg dat CGI uitvoerbaar is
+RUN chmod +x /var/www/cgi-bin/*.cgi || true
+
+# Supervisor start automatisch via /etc/services.d/ (staat in jouw rootfs)
+
