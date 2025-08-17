@@ -1,8 +1,4 @@
 #!/usr/bin/with-contenv bash
 set -euo pipefail
-mkdir -p /run/apache2 /var/log/apache2 \
-         /var/www/localhost/htdocs \
-         /var/www/localhost/cgi-bin
-exec /usr/sbin/httpd -D FOREGROUND
-
-
+mkdir -p /var/run/apache2 /var/log/apache2 /usr/lib/cgi-bin /var/www/html
+exec /usr/sbin/apache2ctl -D FOREGROUND
